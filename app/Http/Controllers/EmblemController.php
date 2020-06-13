@@ -19,7 +19,6 @@ class EmblemController extends Controller
 
         $file = $request->file('Img');
         if (!$file->isValid() || $file->getSize() > 50*1024) {
-            dd($file->getExtension());
             return config('athena.error_response') . '2';
         }
 
