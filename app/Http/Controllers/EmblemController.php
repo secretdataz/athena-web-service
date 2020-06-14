@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class EmblemController extends Controller
@@ -14,18 +15,21 @@ class EmblemController extends Controller
     public function upload(Request $request)
     {
         if ($request->guild_id === 0 || !$request->has('ImgType') || !$request->hasFile('Img') || ($request->input('ImgType') !== 'BMP' && $request->input('ImgType') !== 'GIF')) {
+            Log::warning('Invalid request ' . json_encode($request->all()));
             return config('athena.error_response');
         }
 
         $file = $request->file('Img');
         if (!$file->isValid() || $file->getSize() > 50*1024) {
-            return config('athena.error_response') . '2';
+            Log::warning('Invalid image ' . json_encode($request->all()));
+            return config('athena.error_response');
         }
 
         $old_data = DB::table(self::TABLE)->where('guild_id', $request->guild_id)->where('world_name', $request->world_name)->first();
         $file_name = $file->store(self::STORAGE_DIRECTORY);
         $version = 0;
         if ($old_data) {
+            Log::info('Replacing image');
             Storage::delete($old_data->file_name);
             $version = $old_data->version + 1;
             DB::table(self::TABLE)->where('guild_id', $request->guild_id)->where('world_name', $request->world_name)
@@ -34,6 +38,7 @@ class EmblemController extends Controller
                     'version' => $version,
             ]);
         } else {
+            Log::info('Inserting new image');
             DB::table(self::TABLE)->insert([
                 'guild_id' => $request->guild_id,
                 'world_name' => $request->world_name,

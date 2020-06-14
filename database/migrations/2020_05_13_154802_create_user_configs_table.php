@@ -14,7 +14,8 @@ class CreateUserConfigsTable extends Migration
     public function up()
     {
         Schema::create('user_configs', function (Blueprint $table) {
-            $table->unsignedInteger('account_id');
+            $table->engine = "InnoDB";
+			$table->unsignedInteger('account_id');
             $table->string('world_name');
             $table->json('data');
 
