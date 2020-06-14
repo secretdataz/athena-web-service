@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class EmblemController extends Controller
@@ -19,7 +20,7 @@ class EmblemController extends Controller
 
         $file = $request->file('Img');
         if (!$file->isValid() || $file->getSize() > 50*1024) {
-            return config('athena.error_response') . '2';
+            return config('athena.error_response');
         }
 
         $old_data = DB::table(self::TABLE)->where('guild_id', $request->guild_id)->where('world_name', $request->world_name)->first();

@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Auth\AuthTokenVerifier;
 use Closure;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class RagnarokAuthTokenMiddleware
@@ -22,7 +23,7 @@ class RagnarokAuthTokenMiddleware
             'AID' => 'required',
             'GDID' => 'sometimes|required',
             'WorldName' => 'sometimes|required',
-            'AuthToken' => 'required|string'
+            'AuthToken' => 'sometimes|nullable|string'
         ]);
         if ($validator->fails()) {
             return response(config('athena.error_response'), 401);
@@ -32,7 +33,7 @@ class RagnarokAuthTokenMiddleware
 
         $aid = (int) $data['AID'];
         $gid = $data['GDID'] ?? 0;
-        $token = $data['AuthToken'];
+        $token = $data['AuthToken'] ?? '';
         $world = $data['WorldName'] ?? '';
         if (Arr::first(config('athena.allowed_worlds'), function ($v) use ($world) { return $v == $world; }, '') === '') {
             return response(config('athena.error_response'), 401);

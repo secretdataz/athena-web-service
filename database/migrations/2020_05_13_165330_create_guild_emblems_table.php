@@ -14,7 +14,8 @@ class CreateGuildEmblemsTable extends Migration
     public function up()
     {
         Schema::create('guild_emblems', function (Blueprint $table) {
-            $table->integer('guild_id');
+            $table->engine = "InnoDB";
+			$table->integer('guild_id');
             $table->string('world_name');
             $table->string('file_name');
             $table->integer('version');

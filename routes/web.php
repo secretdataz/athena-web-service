@@ -13,15 +13,23 @@
 |
 */
 
-$router->group(['prefix' => 'userconfig', 'middleware' => 'ro-auth'], function (\Laravel\Lumen\Routing\Router $router) {
-    $router->post('/load', 'UserConfigController@load');
-    $router->post('/save', 'UserConfigController@save');
+$router->group(['prefix' => 'userconfig'], function (\Laravel\Lumen\Routing\Router $router) {
+    $router->post('/load', [
+		'as' => 'usercfg-load',
+		'uses' => 'UserConfigController@load',
+	]);
+    $router->post('/save', [
+		'middleware' => 'ro-auth',
+		'as' => 'usercfg-save',
+		'uses' => 'UserConfigController@save'
+	]);
 });
 
 $router->group(['prefix' => 'emblem'], function (\Laravel\Lumen\Routing\Router $router) {
     $router->post('/upload',[
         'middleware' => 'ro-auth',
+		'as' => 'emblem-upload',
         'uses' => 'EmblemController@upload'
     ]);
-    $router->post('/download', 'EmblemController@download');
+    $router->post('/download', ['as' => 'emblem-download', 'uses' => 'EmblemController@download']);
 });
