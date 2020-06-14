@@ -21,6 +21,7 @@ class AuthTokenVerifier
             return true;
         }
 
+        Log::debug($result->toJson());
         return false;
     }
 }
