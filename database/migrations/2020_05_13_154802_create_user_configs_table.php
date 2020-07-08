@@ -17,12 +17,23 @@ class CreateUserConfigsTable extends Migration
             $table->engine = "InnoDB";
 			$table->unsignedInteger('account_id');
             $table->string('world_name');
-            $table->json('data');
+//            $table->json('data');
 
             $table->index('account_id');
             $table->index('world_name');
             $table->unique(['account_id', 'world_name']);
         });
+
+        try {
+            Schema::table('user_configs', function (Blueprint $table) {
+                $table->json('data')->after('account_id');
+            });
+        } catch (Exception $e) {
+            // If above fails, use LONGTEXT instead
+            Schema::table('user_configs', function (Blueprint $table) {
+                $table->longText('data')->after('account_id');
+            });
+        }
     }
 
     /**
