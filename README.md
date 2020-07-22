@@ -16,3 +16,7 @@ To install dependencies for this project, you need [https://getcomposer.org/](Co
 * run `php artisan key:generate` to generate the encryption key for your installation.
 * run `php artisan migrate` to create required MySQL tables.
 * see `config` directory for additional configurations.
+
+## Support
+Discord: https://discord.gg/u5N69Dy
+Please do not open an issue to ask for support here, and please do not DM me!
