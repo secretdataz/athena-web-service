@@ -39,7 +39,7 @@ class RagnarokAuthTokenMiddleware
             return response(config('athena.error_response'), 401);
         }
 
-        if (!AuthTokenVerifier::verify($aid, $token, $gid, config('athena.force_same_ip', true), $request->getClientIp())) {
+        if (!AuthTokenVerifier::verify($aid, $token, $gid)) {
             return response(config('athena.error_response'), 401);
         } else {
             $request->account_id = $aid;
