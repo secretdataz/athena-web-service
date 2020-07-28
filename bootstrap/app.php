@@ -73,8 +73,8 @@ $app->configure('athena');
 */
 
 $app->middleware([
-    \App\Http\Middleware\RagnarokAuthTokenMiddleware::class,
 ]);
+
 $app->routeMiddleware([
      'ro-auth' => \App\Http\Middleware\RagnarokAuthTokenMiddleware::class,
  ]);
