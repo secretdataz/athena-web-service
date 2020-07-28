@@ -18,7 +18,7 @@ class UserConfigController extends Controller
             ->first();
 
         if (!$data) {
-            return response(config('athena.error_response'), 404);
+            return response()->json(Utils::ErrorResponse('User config not found'), 404);
         }
 
         return $data->data;
@@ -46,7 +46,7 @@ class UserConfigController extends Controller
 
             return '{"Type": 1}';
         } catch(\Exception $e) {
-            return config('athena.error_response');
+            return response()->json(Utils::ErrorResponse($e), 404);
         }
     }
 }

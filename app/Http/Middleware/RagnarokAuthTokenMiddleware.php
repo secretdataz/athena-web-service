@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Auth\AuthTokenVerifier;
+use App\Utils;
 use Closure;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
@@ -15,10 +16,12 @@ class RagnarokAuthTokenMiddleware
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
+     * @param bool $auth
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle($request, Closure $next, $auth = true)
     {
+        $auth = filter_var($auth, FILTER_VALIDATE_BOOLEAN);
         $validator = Validator::make($request->only(['AID', 'GDID', 'AuthToken', 'WorldName']), [
             'AID' => 'required',
             'GDID' => 'sometimes|required',
@@ -26,8 +29,7 @@ class RagnarokAuthTokenMiddleware
             'AuthToken' => 'sometimes|nullable|string'
         ]);
         if ($validator->fails()) {
-            return response(config('athena.error_response'), 401);
-//            return response($validator->errors()->toJson(), 422);
+            return response(Utils::ErrorResponse($validator->errors()->toJson()), 401);
         }
         $data = $validator->validated();
 
@@ -36,11 +38,11 @@ class RagnarokAuthTokenMiddleware
         $token = $data['AuthToken'] ?? '';
         $world = $data['WorldName'] ?? '';
         if (Arr::first(config('athena.allowed_worlds'), function ($v) use ($world) { return $v == $world; }, '') === '') {
-            return response(config('athena.error_response'), 401);
+            return response(Utils::ErrorResponse('World ' . $world . ' is not allowed'), 401);
         }
 
-        if (!AuthTokenVerifier::verify($aid, $token, $gid)) {
-            return response(config('athena.error_response'), 401);
+        if ($auth && !AuthTokenVerifier::verify($aid, $token, $gid)) {
+            return response(Utils::ErrorResponse('Authentication failed'), 401);
         } else {
             $request->account_id = $aid;
             $request->guild_id = $gid;

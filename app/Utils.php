@@ -9,4 +9,11 @@ class Utils
         $obj['Type'] = 1;
         return json_encode($obj);
     }
+
+    static function ErrorResponse($msg): array
+    {
+        $error = config('athena.error_response');
+        $error['Error'] = $msg;
+        return $error;
+    }
 }

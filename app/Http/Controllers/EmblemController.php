@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Utils;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -15,12 +16,12 @@ class EmblemController extends Controller
     public function upload(Request $request)
     {
         if ($request->guild_id === 0 || !$request->has('ImgType') || !$request->hasFile('Img') || ($request->input('ImgType') !== 'BMP' && $request->input('ImgType') !== 'GIF')) {
-            return config('athena.error_response');
+            return response()->json(Utils::ErrorResponse('Input validation failed'), 422);
         }
 
         $file = $request->file('Img');
         if (!$file->isValid() || $file->getSize() > 50*1024) {
-            return config('athena.error_response');
+            return response()->json(Utils::ErrorResponse('Image validation failed'), 422);
         }
 
         $old_data = DB::table(self::TABLE)->where('guild_id', $request->guild_id)->where('world_name', $request->world_name)->first();
@@ -57,7 +58,10 @@ class EmblemController extends Controller
             if (true || $emblem->version > $version)// TODO: Support versioning
                 return Storage::download($emblem->file_name);
         } else {
-            return response('{"Type": 4}', 404);
+            return response()->json([
+                'Type' => 4,
+                'Error' => 'Emblem not found.'
+            ], 404);
         }
     }
 }

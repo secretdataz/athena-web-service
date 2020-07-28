@@ -17,6 +17,7 @@ $router->group(['prefix' => 'userconfig'], function (\Laravel\Lumen\Routing\Rout
     $router->post('/load', [
 		'as' => 'usercfg-load',
 		'uses' => 'UserConfigController@load',
+        'middleware' => 'ro-auth'
 	]);
     $router->post('/save', [
 		'middleware' => 'ro-auth',
@@ -31,5 +32,9 @@ $router->group(['prefix' => 'emblem'], function (\Laravel\Lumen\Routing\Router $
 		'as' => 'emblem-upload',
         'uses' => 'EmblemController@upload'
     ]);
-    $router->post('/download', ['as' => 'emblem-download', 'uses' => 'EmblemController@download']);
+    $router->post('/download', [
+        'as' => 'emblem-download',
+        'uses' => 'EmblemController@download',
+        'middleware' => 'ro-auth:false',
+    ]);
 });
