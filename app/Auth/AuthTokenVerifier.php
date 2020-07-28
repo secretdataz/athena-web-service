@@ -12,7 +12,8 @@ class AuthTokenVerifier
                 ->when($guildId !== 0, function (Builder $q) use ($guildId) {
                     return $q->join('char', 'login.account_id', '=', 'char.account_id')
                         ->join('guild', 'guild.char_id', '=', 'char.char_id')
-                        ->where('guild.guild_id', $guildId);
+                        ->where('guild.guild_id', $guildId)
+                        ->where('online', true);
                 })->count() > 0;
     }
 }
