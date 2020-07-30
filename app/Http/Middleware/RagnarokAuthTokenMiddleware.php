@@ -8,6 +8,7 @@ use Closure;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 class RagnarokAuthTokenMiddleware
 {
@@ -21,6 +22,12 @@ class RagnarokAuthTokenMiddleware
      */
     public function handle($request, Closure $next, $auth = true)
     {
+        if (config('athena.dump_requests')) {
+            // Dump the request into console when running via php artisan serve
+            $output = new ConsoleOutput();
+            $output->writeln(json_encode(request()->all(), JSON_PRETTY_PRINT) . PHP_EOL);
+        }
+
         $auth = filter_var($auth, FILTER_VALIDATE_BOOLEAN);
         $validator = Validator::make($request->only(['AID', 'GDID', 'AuthToken', 'WorldName']), [
             'AID' => 'required',
