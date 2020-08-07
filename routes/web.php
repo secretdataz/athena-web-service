@@ -12,7 +12,6 @@
 | and give it the Closure to call when that URI is requested.
 |
 */
-
 $router->group(['prefix' => 'userconfig'], function (\Laravel\Lumen\Routing\Router $router) {
     $router->post('/load', [
 		'as' => 'usercfg-load',
@@ -24,6 +23,8 @@ $router->group(['prefix' => 'userconfig'], function (\Laravel\Lumen\Routing\Rout
 		'as' => 'usercfg-save',
 		'uses' => 'UserConfigController@save'
 	]);
+    $router->get('/load', 'PleaseDontTestViaBrowserController@please');
+    $router->get('/save', 'PleaseDontTestViaBrowserController@please');
 });
 
 $router->group(['prefix' => 'emblem'], function (\Laravel\Lumen\Routing\Router $router) {
@@ -37,4 +38,6 @@ $router->group(['prefix' => 'emblem'], function (\Laravel\Lumen\Routing\Router $
         'uses' => 'EmblemController@download',
         'middleware' => 'ro-auth:false',
     ]);
+    $router->get('/upload', 'PleaseDontTestViaBrowserController@please');
+    $router->get('/download', 'PleaseDontTestViaBrowserController@please');
 });
