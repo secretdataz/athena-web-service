@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Utils;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class EmblemController extends Controller
@@ -19,8 +18,15 @@ class EmblemController extends Controller
             return response()->json(Utils::ErrorResponse('Input validation failed'), 422);
         }
 
+        if (config('athena.allow_emblem_upload_on_woe') === true) {
+            $woe_status = DB::table('web_service')->where('key', 'woe')->get();
+            if ($woe_status && $woe_status->value > 0) {
+                return response()->json(Utils::ErrorResponse('Emblem change not allowed when WoE is commencing'), 401);
+            }
+        }
+
         $file = $request->file('Img');
-        if (!$file->isValid() || $file->getSize() > 50*1024) {
+        if (!$file->isValid() || $file->getSize() > 50 * 1024) {
             return response()->json(Utils::ErrorResponse('Image validation failed'), 422);
         }
 
@@ -34,7 +40,7 @@ class EmblemController extends Controller
                 ->update([
                     'file_name' => $file_name,
                     'version' => $version,
-            ]);
+                ]);
         } else {
             DB::table(self::TABLE)->insert([
                 'guild_id' => $request->guild_id,
@@ -55,12 +61,15 @@ class EmblemController extends Controller
         $version = $request->input('Version') ?? 0;
         $emblem = DB::table(self::TABLE)->where('guild_id', $request->guild_id)->where('world_name', $request->world_name)->first();
         if ($emblem) {
-            if (true || $emblem->version > $version)// TODO: Support versioning
+            if (true || $emblem->version > $version) // TODO: Support versioning
+            {
                 return Storage::download($emblem->file_name);
+            }
+
         } else {
             return response()->json([
                 'Type' => 4,
-                'Error' => 'Emblem not found.'
+                'Error' => 'Emblem not found.',
             ], 404);
         }
     }
