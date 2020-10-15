@@ -19,7 +19,7 @@ class EmblemController extends Controller
         }
 
         if (config('athena.allow_emblem_upload_on_woe') === true) {
-            $woe_status = DB::table('web_service')->where('key', 'woe')->get();
+            $woe_status = DB::table('web_service')->where('key', 'woe')->first();
             if ($woe_status && $woe_status->value > 0) {
                 return response()->json(Utils::ErrorResponse('Emblem change not allowed when WoE is commencing'), 401);
             }
