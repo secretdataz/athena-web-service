@@ -31,19 +31,76 @@ class UserConfigController extends Controller
     {
         $aid = $request->account_id;
         $world = $request->world_name;
-        $data = Utils::AddType1($request->input('data'));
+        $inputData = json_decode($request->input('data'), true);
+        $oldData = DB::table(self::TABLE)->where('account_id', $aid)->where('world_name', $world)->first();
+
+        $newData = [
+            'data' => [
+                'EmotionHotkey' => null,
+                'UserHotkey_V2' => [
+                    'EmotionTab' => null,
+                    'InterfaceTab' => null,
+                    'SkillBar_1Tab' => null,
+                    'SkillBar_2Tab' => null,
+                ],
+                'UserHotkey' => null,
+            ]
+        ];
+
+        if ($oldData) {
+            $oldJson = json_decode($oldData->data, true);
+
+            if (isset($oldJson['data']['EmotionHotkey']) && $oldJson['data']['EmotionHotkey'] != null) {
+                $newData['data']['EmotionHotkey'] = $oldJson['data']['EmotionHotkey'];
+            }
+            if (isset($oldJson['data']['UserHotkey']) && $oldJson['data']['UserHotkey'] != null) {
+                $newData['data']['UserHotkey'] = $oldJson['data']['UserHotkey'];
+            }
+            if (isset($oldJson['data']['UserHotkey_V2']['EmotionTab']) && $oldJson['data']['UserHotkey_V2']['EmotionTab'] != null) {
+                $newData['data']['UserHotkey_V2']['EmotionTab'] = $oldJson['data']['UserHotkey_V2']['EmotionTab'];
+            }
+            if (isset($oldJson['data']['UserHotkey_V2']['InterfaceTab']) && $oldJson['data']['UserHotkey_V2']['InterfaceTab'] != null) {
+                $newData['data']['UserHotkey_V2']['InterfaceTab'] = $oldJson['data']['UserHotkey_V2']['InterfaceTab'];
+            }
+            if (isset($oldJson['data']['UserHotkey_V2']['SkillBar_1Tab']) && $oldJson['data']['UserHotkey_V2']['SkillBar_1Tab'] != null) {
+                $newData['data']['UserHotkey_V2']['SkillBar_1Tab'] = $oldJson['data']['UserHotkey_V2']['SkillBar_1Tab'];
+            }
+            if (isset($oldJson['data']['UserHotkey_V2']['SkillBar_2Tab']) && $oldJson['data']['UserHotkey_V2']['SkillBar_2Tab'] != null) {
+                $newData['data']['UserHotkey_V2']['SkillBar_2Tab'] = $oldJson['data']['UserHotkey_V2']['SkillBar_2Tab'];
+            }
+        }
+
+        if (isset($inputData['data']['EmotionHotkey']) && $inputData['data']['EmotionHotkey'] != null) {
+            $newData['data']['EmotionHotkey'] = $inputData['data']['EmotionHotkey'];
+        }
+        if (isset($inputData['data']['UserHotkey']) && $inputData['data']['UserHotkey'] != null) {
+            $newData['data']['UserHotkey'] = $inputData['data']['UserHotkey'];
+        }
+        if (isset($inputData['data']['UserHotkey_V2']['EmotionTab']) && $inputData['data']['UserHotkey_V2']['EmotionTab'] != null) {
+            $newData['data']['UserHotkey_V2']['EmotionTab'] = $inputData['data']['UserHotkey_V2']['EmotionTab'];
+        }
+        if (isset($inputData['data']['UserHotkey_V2']['InterfaceTab']) && $inputData['data']['UserHotkey_V2']['InterfaceTab'] != null) {
+            $newData['data']['UserHotkey_V2']['InterfaceTab'] = $inputData['data']['UserHotkey_V2']['InterfaceTab'];
+        }
+        if (isset($inputData['data']['UserHotkey_V2']['SkillBar_1Tab']) && $inputData['data']['UserHotkey_V2']['SkillBar_1Tab'] != null) {
+            $newData['data']['UserHotkey_V2']['SkillBar_1Tab'] = $inputData['data']['UserHotkey_V2']['SkillBar_1Tab'];
+        }
+        if (isset($inputData['data']['UserHotkey_V2']['SkillBar_2Tab']) && $inputData['data']['UserHotkey_V2']['SkillBar_2Tab'] != null) {
+            $newData['data']['UserHotkey_V2']['SkillBar_2Tab'] = $inputData['data']['UserHotkey_V2']['SkillBar_2Tab'];
+        }
+        $newData = json_encode($newData);
+
         try {
-            $cnt = DB::table(self::TABLE)->where('account_id', $aid)->where('world_name', $world)->count();
-            if ($cnt > 0) {
+            if ($oldData) {
                 DB::table(self::TABLE)->where('account_id', $aid)->where('world_name', $world)
                     ->update([
-                        'data' => $data,
+                        'data' => $newData,
                     ]);
             } else {
                 DB::table(self::TABLE)->insert([
                     'account_id' => $aid,
                     'world_name' => $world,
-                    'data' => $data,
+                    'data' => $newData,
                 ]);
             }
 
