@@ -22,9 +22,9 @@ class RagnarokAuthTokenMiddleware
      */
     public function handle($request, Closure $next, $auth = true)
     {
+        $output = new ConsoleOutput();
         if (config('athena.dump_requests')) {
             // Dump the request into console when running via php artisan serve
-            $output = new ConsoleOutput();
             $output->writeln(json_encode(request()->all(), JSON_PRETTY_PRINT) . PHP_EOL);
         }
 
@@ -36,6 +36,9 @@ class RagnarokAuthTokenMiddleware
             'AuthToken' => 'sometimes|nullable|string'
         ]);
         if ($validator->fails()) {
+            if (config('athena.log_failed_auth')) {
+                $output->writeln('Input validation failed' . PHP_EOL);
+            }
             return response(Utils::ErrorResponse($validator->errors()->toJson()), 401);
         }
         $data = $validator->validated();
@@ -45,10 +48,16 @@ class RagnarokAuthTokenMiddleware
         $token = $data['AuthToken'] ?? '';
         $world = $data['WorldName'] ?? '';
         if (Arr::first(config('athena.allowed_worlds'), function ($v) use ($world) { return $v == $world; }, '') === '') {
+            if (config('athena.log_failed_auth')) {
+                $output->writeln('World ' . $world . 'not allowed' . PHP_EOL);
+            }
             return response(Utils::ErrorResponse('World ' . $world . ' is not allowed'), 401);
         }
 
         if ($auth && !AuthTokenVerifier::verify($aid, $token, $gid)) {
+            if (config('athena.log_failed_auth')) {
+                $output->writeln('Token validation failed' . PHP_EOL);
+            }
             return response(Utils::ErrorResponse('Authentication failed'), 401);
         } else {
             $request->account_id = $aid;
