@@ -18,7 +18,8 @@ class UserConfigController extends Controller
             ->first();
 
         if (!$data) {
-            return response()->json(Utils::ErrorResponse('User config not found'), 404);
+//            return response()->json(Utils::ErrorResponse('User config not found'), 404);
+            return '{"Type": 1}';
         }
 
         return $data->data;
