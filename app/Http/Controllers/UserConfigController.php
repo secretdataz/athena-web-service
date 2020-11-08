@@ -22,7 +22,9 @@ class UserConfigController extends Controller
             return '{"Type": 1}';
         }
 
-        return $data->data;
+        $data = json_decode($data->data, true);
+        $data['Type'] = 1;
+        return $data;
     }
 
     public function save(Request $request)
