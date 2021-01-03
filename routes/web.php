@@ -12,6 +12,8 @@
 | and give it the Closure to call when that URI is requested.
 |
 */
+$router->get('/', 'PleaseDontTestViaBrowserController@please');
+
 $router->group(['prefix' => 'userconfig'], function (\Laravel\Lumen\Routing\Router $router) {
     $router->post('/load', [
 		'as' => 'usercfg-load',
