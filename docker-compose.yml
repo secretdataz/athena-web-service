@@ -1,0 +1,28 @@
+version: "3.7"
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: athena-web-service
+    container_name: athena-web-service_app
+    restart: unless-stopped
+    working_dir: /service
+    volumes:
+      - ./:/service
+    networks:
+      - athena
+  nginx:
+    image: nginx:1-alpine
+    container_name: athena-web-service_nginx
+    restart: unless-stopped
+    ports:
+      - 8000:80
+    volumes:
+      - ./:/service
+      - ./docker/nginx:/etc/nginx/conf.d
+    networks:
+      - athena
+networks:
+  athena:
+    driver: bridge
