@@ -1,5 +1,6 @@
 <?php
 
+use App\Utils;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,7 +15,7 @@ class CreateUserConfigsTable extends Migration
     public function up()
     {
         Schema::defaultStringLength(191);
-        Schema::create('user_configs', function (Blueprint $table) {
+        Schema::create(Utils::tb('user_configs'), function (Blueprint $table) {
             $table->engine = "InnoDB";
 			$table->unsignedInteger('account_id');
             $table->string('world_name');
@@ -26,12 +27,12 @@ class CreateUserConfigsTable extends Migration
         });
 
         try {
-            Schema::table('user_configs', function (Blueprint $table) {
+            Schema::table(Utils::tb('user_configs'), function (Blueprint $table) {
                 $table->json('data')->after('account_id');
             });
         } catch (Exception $e) {
             // If above fails, use LONGTEXT instead
-            Schema::table('user_configs', function (Blueprint $table) {
+            Schema::table(Utils::tb('user_configs'), function (Blueprint $table) {
                 $table->longText('data')->after('account_id');
             });
         }
@@ -44,6 +45,6 @@ class CreateUserConfigsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_configs');
+        Schema::dropIfExists(Utils::tb('user_configs'));
     }
 }

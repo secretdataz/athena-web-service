@@ -1,7 +1,9 @@
 <?php
 
+use App\Utils;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CreateWebServiceTable extends Migration
@@ -13,12 +15,12 @@ class CreateWebServiceTable extends Migration
      */
     public function up()
     {
-        Schema::create('web_service', function (Blueprint $table) {
+        Schema::create(Utils::tb('web_service'), function (Blueprint $table) {
             $table->id();
             $table->string('key')->unique();
             $table->integer('value');
         });
-        DB::table('web_service')->insert(['key' => 'woe', 'value' => 0]);
+        DB::table(Utils::tb('web_service'))->insert(['key' => 'woe', 'value' => 0]);
     }
 
     /**
@@ -28,6 +30,6 @@ class CreateWebServiceTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('web_service');
+        Schema::dropIfExists(Utils::tb('web_service'));
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Utils;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +14,7 @@ class CreateGuildEmblemsTable extends Migration
      */
     public function up()
     {
-        Schema::create('guild_emblems', function (Blueprint $table) {
+        Schema::create(Utils::tb('guild_emblems'), function (Blueprint $table) {
             $table->engine = "InnoDB";
 			$table->integer('guild_id');
             $table->string('world_name');
@@ -35,6 +36,6 @@ class CreateGuildEmblemsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('guild_emblems');
+        Schema::dropIfExists(Utils::tb('guild_emblems'));
     }
 }

@@ -12,7 +12,7 @@ class UserConfigController extends Controller
 
     public function load(Request $request)
     {
-        $data = DB::table(self::TABLE)
+        $data = DB::table(Utils::tb(self::TABLE))
             ->where('account_id', $request->account_id)
             ->where('world_name', $request->world_name)
             ->first();
@@ -30,14 +30,14 @@ class UserConfigController extends Controller
         $world = $request->world_name;
         $data = Utils::AddType1($request->input('data'));
         try {
-            $cnt = DB::table(self::TABLE)->where('account_id', $aid)->where('world_name', $world)->count();
+            $cnt = DB::table(Utils::tb(self::TABLE))->where('account_id', $aid)->where('world_name', $world)->count();
             if ($cnt > 0) {
-                DB::table(self::TABLE)->where('account_id', $aid)->where('world_name', $world)
+                DB::table(Utils::tb(self::TABLE))->where('account_id', $aid)->where('world_name', $world)
                     ->update([
                         'data' => $data,
                     ]);
             } else {
-                DB::table(self::TABLE)->insert([
+                DB::table(Utils::tb(self::TABLE))->insert([
                     'account_id' => $aid,
                     'world_name' => $world,
                     'data' => $data,

@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'table_prefix' => env('ATHENA_TABLE_PREFIX', ''), // Table prefix for Athena Web Service's tables
     'error_response' => ['Type' => 3],
     'allowed_worlds' => explode(',', env('ATHENA_ALLOWED_WORLDS', 'rAthena')),
     'dump_requests' => env('ATHENA_DUMP_REQUESTS', false),

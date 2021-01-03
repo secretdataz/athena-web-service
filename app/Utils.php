@@ -16,4 +16,9 @@ class Utils
         $error['Error'] = $msg;
         return $error;
     }
+
+    static function tb(string $tableName): string
+    {
+        return config('athena.table_prefix') . $tableName;
+    }
 }

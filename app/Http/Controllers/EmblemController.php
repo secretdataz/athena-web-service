@@ -19,7 +19,7 @@ class EmblemController extends Controller
         }
 
         if (config('athena.allow_emblem_upload_on_woe') === true) {
-            $woe_status = DB::table('web_service')->where('key', 'woe')->first();
+            $woe_status = DB::table(Utils::tb('web_service'))->where('key', 'woe')->first();
             if ($woe_status && $woe_status->value > 0) {
                 return response()->json(Utils::ErrorResponse('Emblem change not allowed when WoE is commencing'), 401);
             }
@@ -30,19 +30,19 @@ class EmblemController extends Controller
             return response()->json(Utils::ErrorResponse('Image validation failed'), 422);
         }
 
-        $old_data = DB::table(self::TABLE)->where('guild_id', $request->guild_id)->where('world_name', $request->world_name)->first();
+        $old_data = DB::table(Utils::tb(self::TABLE))->where('guild_id', $request->guild_id)->where('world_name', $request->world_name)->first();
         $file_name = $file->store(self::STORAGE_DIRECTORY);
         $version = 0;
         if ($old_data) {
             Storage::delete($old_data->file_name);
             $version = $old_data->version + 1;
-            DB::table(self::TABLE)->where('guild_id', $request->guild_id)->where('world_name', $request->world_name)
+            DB::table(Utils::tb(self::TABLE))->where('guild_id', $request->guild_id)->where('world_name', $request->world_name)
                 ->update([
                     'file_name' => $file_name,
                     'version' => $version,
                 ]);
         } else {
-            DB::table(self::TABLE)->insert([
+            DB::table(Utils::tb(self::TABLE))->insert([
                 'guild_id' => $request->guild_id,
                 'world_name' => $request->world_name,
                 'file_name' => $file_name,
@@ -59,7 +59,7 @@ class EmblemController extends Controller
     public function download(Request $request)
     {
         $version = $request->input('Version') ?? 0;
-        $emblem = DB::table(self::TABLE)->where('guild_id', $request->guild_id)->where('world_name', $request->world_name)->first();
+        $emblem = DB::table(Utils::tb(self::TABLE))->where('guild_id', $request->guild_id)->where('world_name', $request->world_name)->first();
         if ($emblem) {
             if (true || $emblem->version > $version) // TODO: Support versioning
             {
