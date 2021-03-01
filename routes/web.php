@@ -18,7 +18,7 @@ $router->group(['prefix' => 'userconfig'], function (\Laravel\Lumen\Routing\Rout
     $router->post('/load', [
 		'as' => 'usercfg-load',
 		'uses' => 'UserConfigController@load',
-        'middleware' => 'ro-auth'
+        'middleware' => 'ro-auth:false',
 	]);
     $router->post('/save', [
 		'middleware' => 'ro-auth',
