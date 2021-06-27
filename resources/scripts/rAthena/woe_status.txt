@@ -11,6 +11,6 @@ OnAgitEnd3:
 .@woese = agitcheck2() << 1;
 .@woete = agitcheck3() << 2;
 .@status = .@woe|.@woese|.@woete;
-sql_query "UPDATE web_service SET `woe` = " + .@status + " WHERE `key` = 'woe';";
+query_sql "UPDATE web_service SET woe = " + .@status + " WHERE key = 'woe'";
 end;
 }
