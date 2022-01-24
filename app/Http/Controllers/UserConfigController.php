@@ -12,7 +12,7 @@ class UserConfigController extends Controller
 
     public function load(Request $request)
     {
-        $data = DB::table(Utils::tb(self::TABLE))
+        $data = DB::connection($request->world_name)->table(Utils::tb(self::TABLE))
             ->where('account_id', $request->account_id)
             ->where('world_name', $request->world_name)
             ->first();
@@ -32,7 +32,7 @@ class UserConfigController extends Controller
         $aid = $request->account_id;
         $world = $request->world_name;
         $inputData = json_decode($request->input('data'), true);
-        $oldData = DB::table(Utils::tb(self::TABLE))->where('account_id', $aid)->where('world_name', $world)->first();
+        $oldData = DB::connection($request->world_name)->table(Utils::tb(self::TABLE))->where('account_id', $aid)->where('world_name', $world)->first();
 
         $newData = [
             'data' => [
@@ -44,7 +44,7 @@ class UserConfigController extends Controller
                     'SkillBar_2Tab' => null,
                 ],
                 'UserHotkey' => null,
-            ]
+            ],
         ];
 
         if ($oldData) {
@@ -92,12 +92,12 @@ class UserConfigController extends Controller
 
         try {
             if ($oldData) {
-                DB::table(Utils::tb(self::TABLE))->where('account_id', $aid)->where('world_name', $world)
+                DB::connection($request->world_name)->table(Utils::tb(self::TABLE))->where('account_id', $aid)->where('world_name', $world)
                     ->update([
                         'data' => $newData,
                     ]);
             } else {
-                DB::table(Utils::tb(self::TABLE))->insert([
+                DB::connection($request->world_name)->table(Utils::tb(self::TABLE))->insert([
                     'account_id' => $aid,
                     'world_name' => $world,
                     'data' => $newData,
@@ -105,7 +105,7 @@ class UserConfigController extends Controller
             }
 
             return '{"Type": 1}';
-        } catch(\Exception $e) {
+        } catch (\Exception$e) {
             return response()->json(Utils::ErrorResponse($e), 404);
         }
     }

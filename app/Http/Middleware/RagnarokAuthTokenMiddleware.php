@@ -6,7 +6,6 @@ use App\Auth\AuthTokenVerifier;
 use App\Utils;
 use Closure;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
@@ -33,7 +32,7 @@ class RagnarokAuthTokenMiddleware
             'AID' => 'required',
             'GDID' => 'sometimes|required',
             'WorldName' => 'sometimes|required',
-            'AuthToken' => 'sometimes|nullable|string'
+            'AuthToken' => 'sometimes|nullable|string',
         ]);
         if ($validator->fails()) {
             if (config('athena.log_failed_auth')) {
@@ -47,14 +46,14 @@ class RagnarokAuthTokenMiddleware
         $gid = $data['GDID'] ?? 0;
         $token = $data['AuthToken'] ?? '';
         $world = $data['WorldName'] ?? '';
-        if (Arr::first(config('athena.allowed_worlds'), function ($v) use ($world) { return $v == $world; }, '') === '') {
+        if (Arr::first(config('athena.allowed_worlds'), function ($v) use ($world) {return $v == $world;}, '') === '') {
             if (config('athena.log_failed_auth')) {
                 $output->writeln('World ' . $world . 'not allowed' . PHP_EOL);
             }
             return response(Utils::ErrorResponse('World ' . $world . ' is not allowed'), 401);
         }
 
-        if ($auth && !AuthTokenVerifier::verify($aid, $token, $gid)) {
+        if ($auth && !AuthTokenVerifier::verify($world, $aid, $token, $gid)) {
             if (config('athena.log_failed_auth')) {
                 $output->writeln('Token validation failed' . PHP_EOL);
             }
